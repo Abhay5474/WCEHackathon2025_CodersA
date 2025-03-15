@@ -47,7 +47,7 @@ public class Animal_Injury extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     private TextView txtResult;
     private static final String API_URL = "https://detect.roboflow.com";
-    private static final String API_KEY = "ikZWrzr1w0LHe0TdhI7p";
+    private static final String API_KEY = "YOUR API KEY";
     private static final String MODEL_ID = "injured-animal-detector-6zzbu/3";
     private static final String CONFIDENCE_THRESHOLD = "0.04";
     private String latitude, longitude;

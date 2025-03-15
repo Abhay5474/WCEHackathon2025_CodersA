@@ -20,7 +20,7 @@ public class MainChat extends AppCompatActivity {
     private com.example.hackathon.ChatAdapter chatAdapter;
     private List<com.example.hackathon.ChatMessage> chatMessages;
     private com.example.hackathon.GeminiApiService geminiApiService;
-    private static final String API_KEY = "AIzaSyDgsrTya7QBVnWkiZxn5564ZwmVJYMeKX8"; // Replace with your Gemini API key
+    private static final String API_KEY = "PASTE YOUR GEMINI API KEY HERE"; // Replace with your Gemini API key
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
