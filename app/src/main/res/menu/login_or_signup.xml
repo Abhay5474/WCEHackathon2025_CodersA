@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="Login"
+        android:iconTint="@color/black"
+        android:icon="@drawable/login_nav_img"
+        android:id="@+id/login"
+        />
+    <item
+        android:title="Sign Up"
+        android:iconTint="@color/black"
+        android:icon="@drawable/signup_img"
+        android:id="@+id/signup"
+        />
+</menu>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="background">#2C54EF</color>
+    <color name="adminNavbarBG">#2C81E2</color>
+    <color name="cardbg">#FAF9F9</color>
+    <color name="purple_500">#556BE9</color>
+    <color name="transparent">#00000000</color>
+    <color name="admin_nav_color">#6440D2</color>
+    <color name="red">#E80D0D</color>
+    <color name="primary">#4A90E2</color>
+    <color name="glass">#49FFFFFF</color>
+</resources>

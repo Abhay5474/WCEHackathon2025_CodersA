@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:title="User"
+        android:icon="@drawable/user_img"
+        android:id="@+id/user"
+        />
+    <item
+        android:title="Admin"
+        android:icon="@drawable/user_img"
+        android:id="@+id/admin"
+        />
+    <item
+        android:title="Authorized Users"
+        android:icon="@drawable/user_img"
+        android:id="@+id/authuser"
+        />
+</menu>
