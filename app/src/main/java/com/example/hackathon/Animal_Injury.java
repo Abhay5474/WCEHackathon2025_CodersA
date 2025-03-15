@@ -1,5 +1,7 @@
 package com.example.hackathon;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.lang.String;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -176,8 +178,88 @@ public class Animal_Injury extends AppCompatActivity {
             txtResult.setText("Select an image first!");
             return;
         }
-        // Detection logic here
+
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+            // Save the selected image as a file
+            File file = new File(getCacheDir(), "upload.jpg");
+            FileOutputStream out = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            out.close();
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("file", "upload.jpg",
+                            RequestBody.create(file, MediaType.parse("image/jpeg")))
+                    .build();
+
+            String apiUrl = API_URL + "/" + MODEL_ID +
+                    "?api_key=" + API_KEY +
+                    "&confidence=" + CONFIDENCE_THRESHOLD;
+
+            Request request = new Request.Builder()
+                    .url(apiUrl)
+                    .post(requestBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(() -> txtResult.setText("Error: " + e.getMessage()));
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String result = response.body().string();
+                        runOnUiThread(() -> {
+                            try {
+                                JSONObject jsonResponse = new JSONObject(result);
+                                JSONArray predictions = jsonResponse.getJSONArray("predictions");
+                                double maxConfidence = 0.0;
+                                for (int i = 0; i < predictions.length(); i++) {
+                                    JSONObject prediction = predictions.getJSONObject(i);
+                                    if (prediction.getString("class").equals("injured")) {
+                                        double confidence = prediction.getDouble("confidence") * 100;
+                                        if (confidence > maxConfidence) {
+                                            maxConfidence = confidence;
+                                        }
+                                    }
+                                }
+
+                                String severity;
+                                if (maxConfidence >= 65) {
+                                    severity = "high";
+                                } else if (maxConfidence >= 40) {
+                                    severity = "medium";
+                                } else if (maxConfidence > 0) {
+                                    severity = "low";
+                                } else {
+                                    severity = "none";
+                                }
+                                showSeverityCard(severity);
+                            } catch (JSONException e) {
+                                txtResult.setText("Error parsing response");
+                            }
+                        });
+                    } else {
+                        runOnUiThread(() -> txtResult.setText("Failed to get response"));
+                    }
+                }
+            });
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            txtResult.setText("Error: " + e.getMessage());
+        }
     }
+
+
+
+
 
     private String extractFileName(String uriString) {
         Uri uri = Uri.parse(uriString);
@@ -195,5 +277,40 @@ public class Animal_Injury extends AppCompatActivity {
         float scaleHeight = ((float) reqHeight) / height;
         float scaleFactor = Math.min(scaleWidth, scaleHeight);
         return Bitmap.createScaledBitmap(bitmap, Math.round(width * scaleFactor), Math.round(height * scaleFactor), true);
+    }
+
+    private void showSeverityCard(String severity) {
+        severityContainer.removeAllViews();  // Clear previous cards
+
+        // Inflate the card once
+        View cardView = LayoutInflater.from(this).inflate(R.layout.severity_card, severityContainer, false);
+        TextView txtSeverity = cardView.findViewById(R.id.txtSeverity);
+        Button btnOk = cardView.findViewById(R.id.btnOk);
+
+        // Set Severity Text
+        txtSeverity.setText("Severity: " + severity);
+
+        // Set background color based on severity
+        int color;
+        switch (severity.toLowerCase()) {
+            case "high":
+                color = getResources().getColor(android.R.color.holo_red_light);
+                break;
+            case "medium":
+                color = getResources().getColor(android.R.color.holo_orange_light);
+                break;
+            case "low":
+                color = getResources().getColor(android.R.color.holo_green_light);
+                break;
+            default:
+                color = getResources().getColor(android.R.color.darker_gray);
+        }
+        cardView.setBackgroundColor(color);
+
+        // OK Button to remove the card
+        btnOk.setOnClickListener(v -> severityContainer.removeView(cardView));
+
+        // Add card to the container
+        severityContainer.addView(cardView);
     }
 }
